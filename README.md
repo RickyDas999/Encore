@@ -8,9 +8,3 @@ comedy shows, and other live experiences in nearby cities.
 
 - `client`: React + TypeScript + Vite frontend
 - `server`: Node.js + TypeScript + Express backend
-
-## Next Build Steps
-
-1. Add PostgreSQL connection and schema files in `server/src/db`.
-2. Seed one user and a set of sample events.
-3. Implement `GET /events` and render the Explore page with real data.
