@@ -1,39 +1,46 @@
 import {useState, useEffect} from 'react';
+import  EventCard from '../components/EventCard'
+import type { EventItem } from "../types/EventItem";
 
-type EventItem = {
-  id: number;
-  title: string;
-  category: string;
-  venue: string;
-  city: string;
-  event_date: string;
-  price: string;
-}
+
 
 function ExplorePage() {
-
   const [events, setEvents] = useState<EventItem[]>([]);
+  const [isLoading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch("http://localhost:3001/events")
-      .then(res => res.json())
-      .then(data => setEvents(data))
+    async function fetchEvents() {
+      try {
+        const res = await fetch("http://localhost:3001/events");
+        if (!res.ok) throw new Error(`Error status: ${res.status}`);
+        const data = await res.json();
+        setEvents(data);
+      }
+      catch (error) {
+        setError(error instanceof Error ? error.message : 'Something went wrong');
+      }
+      finally {
+        setLoading(false)
+      }
+    }
+    fetchEvents();
   }, [])
 
   return (
     <main>
       <section>
-        <p>Encore</p>
-        <h1>Discover events worth the trip.</h1>
-        <p>{events.length} events loaded... </p>
+        <h1>Encore</h1>
+        <h2>Discover events worth the trip.</h2>
 
-        {events.map(event => (
-          <div key = {event.id}> 
-            {event.title} - {event.city} - {new Date(event.event_date).toLocaleDateString()} - ${event.price}
-          </div>
-        )
-        )}
+        {isLoading && <p>Loading events... </p>}
+        {error && <p>{error}</p>}
 
+        <div className='wrap'>
+          {events.map(event => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </div>
       </section>
     </main>
   );
